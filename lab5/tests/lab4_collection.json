@@ -1,0 +1,397 @@
+{
+  "info": {
+    "name": "Testing API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Topics",
+      "item": [
+        {
+          "name": "GET Topics - initial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/topics", "host": ["{{baseUrl}}"], "path": ["topics"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Topic - create valid",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/topics", "host": ["{{baseUrl}}"], "path": ["topics"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Микробиология\",\n  \"description\": \"Тема для проверки POST /topics\"\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 201\", function () {",
+            "    pm.response.to.have.status(201);",
+            "});",
+            "let responseData = pm.response.json();",
+            "pm.collectionVariables.set(\"createdTopicId\", responseData.id);"
+          ]}}]
+        },
+        {
+          "name": "GET Topics - after create",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/topics", "host": ["{{baseUrl}}"], "path": ["topics"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "const list = pm.response.json();",
+            "pm.test(\"Created topic exists\", function () {",
+            "    pm.expect(list.some(x => x.id === Number(pm.collectionVariables.get(\"createdTopicId\")))).to.eql(true);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Topic - validation error",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/topics", "host": ["{{baseUrl}}"], "path": ["topics"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Би\",\n  \"description\": \"Слишком короткое название\"\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 422\", function () {",
+            "    pm.response.to.have.status(422);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "PUT Topic - update valid",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/topics/{{createdTopicId}}", "host": ["{{baseUrl}}"], "path": ["topics", "{{createdTopicId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Обновлённая микробиология\",\n  \"description\": \"Обновлено через Postman\"\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "PUT Topic - not found",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/topics/99999", "host": ["{{baseUrl}}"], "path": ["topics", "99999"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Несуществующая тема\"\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 404 or 422\", function () {",
+            "    pm.expect([404, 422]).to.include(pm.response.code);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "DELETE Topic - valid",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/topics/{{createdTopicId}}", "host": ["{{baseUrl}}"], "path": ["topics", "{{createdTopicId}}"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 204\", function () {",
+            "    pm.response.to.have.status(204);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "DELETE Topic - conflict",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/topics/1", "host": ["{{baseUrl}}"], "path": ["topics", "1"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 409\", function () {",
+            "    pm.response.to.have.status(409);",
+            "});"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Tests",
+      "item": [
+        {
+          "name": "GET Test - valid",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/tests/1", "host": ["{{baseUrl}}"], "path": ["tests", "1"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "GET Test - not found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/tests/99999", "host": ["{{baseUrl}}"], "path": ["tests", "99999"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 404\", function () {",
+            "    pm.response.to.have.status(404);",
+            "});"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Attempts",
+      "item": [
+        {
+          "name": "POST Attempt - create valid",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/attempts", "host": ["{{baseUrl}}"], "path": ["attempts"] },
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": 2,\n  \"test_id\": 1\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 201\", function () {",
+            "    pm.response.to.have.status(201);",
+            "});",
+            "let responseData = pm.response.json();",
+            "pm.collectionVariables.set(\"createdAttemptId\", responseData.id);"
+          ]}}]
+        },
+        {
+          "name": "POST Attempt - not found",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/attempts", "host": ["{{baseUrl}}"], "path": ["attempts"] },
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": 999,\n  \"test_id\": 1\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 404\", function () {",
+            "    pm.response.to.have.status(404);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "GET Attempt - valid",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "GET Attempt - not found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attempts/99999", "host": ["{{baseUrl}}"], "path": ["attempts", "99999"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 404\", function () {",
+            "    pm.response.to.have.status(404);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Answer - valid single choice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}/answers", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}", "answers"] },
+            "body": { "mode": "raw", "raw": "{\n  \"question_id\": 1,\n  \"selected_option_ids\": [1]\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Answer - invalid question",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}/answers", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}", "answers"] },
+            "body": { "mode": "raw", "raw": "{\n  \"question_id\": 99999,\n  \"selected_option_ids\": [1]\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 404\", function () {",
+            "    pm.response.to.have.status(404);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Answer - wrong text answer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}/answers", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}", "answers"] },
+            "body": { "mode": "raw", "raw": "{\n  \"question_id\": 3,\n  \"text_answer\": \"Ядро\"\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Finish Attempt - valid",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}/finish", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}", "finish"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Finish Attempt - conflict",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}/finish", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}", "finish"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 409\", function () {",
+            "    pm.response.to.have.status(409);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "POST Answer - after finish conflict",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/attempts/{{createdAttemptId}}/answers", "host": ["{{baseUrl}}"], "path": ["attempts", "{{createdAttemptId}}", "answers"] },
+            "body": { "mode": "raw", "raw": "{\n  \"question_id\": 2,\n  \"selected_option_ids\": [4, 5, 7]\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 409\", function () {",
+            "    pm.response.to.have.status(409);",
+            "});"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Adaptive Tests",
+      "item": [
+        {
+          "name": "POST Generate Adaptive - valid",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/generate-adaptive", "host": ["{{baseUrl}}"], "path": ["tests", "generate-adaptive"] },
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": 2,\n  \"topic_id\": 1,\n  \"based_on_attempt_id\": {{createdAttemptId}},\n  \"created_by\": 1,\n  \"question_count\": 4\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 201\", function () {",
+            "    pm.response.to.have.status(201);",
+            "});",
+            "let responseData = pm.response.json();",
+            "pm.collectionVariables.set(\"adaptiveTestId\", responseData.test_id);"
+          ]}}]
+        },
+        {
+          "name": "POST Generate Adaptive - not found",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/generate-adaptive", "host": ["{{baseUrl}}"], "path": ["tests", "generate-adaptive"] },
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": 2,\n  \"topic_id\": 1,\n  \"based_on_attempt_id\": 99999,\n  \"created_by\": 1,\n  \"question_count\": 4\n}" }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 404\", function () {",
+            "    pm.response.to.have.status(404);",
+            "});"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "item": [
+        {
+          "name": "GET Recommendations - valid",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/recommendations/student/2", "host": ["{{baseUrl}}"], "path": ["recommendations", "student", "2"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        },
+        {
+          "name": "GET Recommendations - empty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/recommendations/student/1", "host": ["{{baseUrl}}"], "path": ["recommendations", "student", "1"] }
+          },
+          "response": [],
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]}}]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
+    { "key": "createdTopicId", "value": "" },
+    { "key": "createdAttemptId", "value": "" },
+    { "key": "adaptiveTestId", "value": "" }
+  ]
+}
