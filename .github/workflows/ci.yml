@@ -37,14 +37,14 @@ jobs:
       - name: Build and push backend image
         uses: docker/build-push-action@v5
         with:
-          context: .lab5/backend
+          context: lab5/backend
           push: ${{ github.event_name == 'push' }}
           tags: ${{ env.REGISTRY }}/${{ steps.vars.outputs.repo }}/backend:latest
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
-          context: .lab5/frontend
+          context: lab5/frontend
           push: ${{ github.event_name == 'push' }}
           tags: ${{ env.REGISTRY }}/${{ steps.vars.outputs.repo }}/frontend:latest
 
