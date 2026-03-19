@@ -2,9 +2,9 @@ name: CI — Build, Push & Integration Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ lab5 ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ lab5 ]
 
 env:
   REGISTRY: ghcr.io
